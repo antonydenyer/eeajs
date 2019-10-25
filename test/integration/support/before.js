@@ -43,7 +43,7 @@ const cloneQuickStart = () => {
 };
 
 const runPrivacyQuickstart = () => {
-  return exec("cd besu-quickstart/privacy && ./run.sh").then(logOutput);
+  return exec("cd besu-quickstart/privacy && sudo ./run.sh").then(logOutput);
 };
 
 const waitForBesu = () => {

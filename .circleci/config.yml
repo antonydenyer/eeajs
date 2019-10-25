@@ -1,14 +1,23 @@
+---
 version: 2
+
 jobs:
   build:
     working_directory: ~/web3js-eea
     docker:
-    - image: docker:dind
+    - image: circleci/node:10.17.0
     steps:
+    - checkout
+    - run:
+        name: Install Docker Compose
+        command: |
+            set -x
+            curl -L https://github.com/docker/compose/releases/download/1.24.1/docker-compose-`uname -s`-`uname -m` > docker-compose
+            sudo mv docker-compose /usr/local/bin/docker-compose
+            sudo chmod +x /usr/local/bin/docker-compose
     - run:
         name: install system dependencies
-        command: apk add git nodejs npm python make gcc g++ bash docker-compose curl
-    - checkout
+        command: sudo apt-get install libsecp256k1-dev bash
     - restore_cache:
         key: dependency-cache-{{ checksum "package-lock.json" }}
     - run:
@@ -19,6 +28,16 @@ jobs:
         paths:
         - ./node_modules
     - setup_remote_docker
+    - run:
+        name: docker version
+        command: |
+            # sudo groupadd docker
+            # sudo usermod -a -G docker $USER
+            # docker version
+            sudo docker version
+    - run:
+        name: start quick start
+        command: node ./test/integration/support/before.js
     - run:
         name: test
         command: npm test
